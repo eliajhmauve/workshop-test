@@ -51,12 +51,25 @@ export class AssetTransferContract extends Contract {
     async #readAsset(ctx: Context, id: string): Promise<Uint8Array> {
         const assetBytes = await ctx.stub.getState(id); // get the asset from chaincode state
         if (!assetBytes || assetBytes.length === 0) {
-            throw new Error(`Sorry, asset ${id} has not been created`);
+            throw new Error(`Sorry, asset ${id} has not been created XDD You need to try again`);
         }
 
         return assetBytes;
     }
 
+    @Transaction(false)
+    async ValidateValue(ctx: Context, id: string, lower: number, upper: number): Promise<boolean> {
+        const existingAssetBytes = await this.#readAsset(ctx, id);
+        const existingAsset = Asset.newInstance(unmarshal(existingAssetBytes));
+    
+        if (existingAsset.AppraisedValue > lower && existingAsset.AppraisedValue < upper) {
+            ctx.stub.setEvent('validateValue', Buffer.from(`Asset ${id} value is within range`));
+            return true;
+        } else {
+            ctx.stub.setEvent('validateValue', Buffer.from(`Asset ${id} value is out of range`));
+            return false;
+        }
+    }
     /**
      * UpdateAsset updates an existing asset in the world state with provided partial asset data, which must include
      * the asset ID.

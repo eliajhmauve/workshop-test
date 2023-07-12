@@ -38,11 +38,16 @@ export default async function main(gateway: Gateway): Promise<void> {
     }
 }
 
-function onEvent(event: ChaincodeEvent): void {
+async function onEvent(event: ChaincodeEvent): Promise<void> {
     simulateFailureIfRequired();
 
     console.log(printable(event));
+
+    // Update the checkpoint after the event has been successfully processed
+    // await checkpointer.getBlockNumber(event.blockNumber);
+    // await checkpointer.getTransactionId(event.transactionId);
 }
+
 
 function getSimulatedFailureCount(): number {
     const value = process.env.SIMULATED_FAILURE_COUNT ?? '0';

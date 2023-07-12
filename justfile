@@ -81,7 +81,7 @@ nginx:
     kubectl wait --namespace ingress-nginx \
       --for=condition=ready pod \
       --selector=app.kubernetes.io/component=controller \
-      --timeout=3m
+      --timeout=5m
 
 # Just start the operator
 operator: operator-crds
